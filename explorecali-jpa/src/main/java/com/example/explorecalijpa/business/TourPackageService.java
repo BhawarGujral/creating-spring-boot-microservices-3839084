@@ -16,14 +16,14 @@ public class TourPackageService {
   }
 
   public TourPackage createTourPackage(String code, String name) {
-    return new TourPackage(code, name);
+    return tourPackageRepository.findById(name).orElse(new TourPackage(code, name));
   }
 
   public List<TourPackage> lookupAll() {
-    return null;
+    return tourPackageRepository.findAll();
   }
 
   public long total() {
-    return 0;
+    return tourPackageRepository.count();
   }
 }
