@@ -1,17 +1,23 @@
 package com.example.explorecalijpa.web;
 
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+
+import javax.annotation.processing.Generated;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.explorecalijpa.business.TourRatingService;
+import com.example.explorecalijpa.model.TourRating;
 
 import jakarta.validation.Valid;
 
@@ -27,6 +33,17 @@ public class TourRatingController {
 
   public TourRatingController(TourRatingService tourRatingService) {
     this.tourRatingService = tourRatingService;
+  }
+
+  @GetMapping
+  public List<RatingDto> getAllRatingsforTour(@PathVariable(value = "tourId") int tourId) {
+    List<TourRating> ratings = tourRatingService.lookupRatings(tourId);
+    return ratings.stream().map(RatingDto::new).toList();
+  }
+
+  @GetMapping("/average")
+  public Map<String, Double> getAverage(@PathVariable(value = "tourId") int tourId) {
+    return Map.of("average", tourRatingService.getAverageScore(tourId));
   }
 
   /**
