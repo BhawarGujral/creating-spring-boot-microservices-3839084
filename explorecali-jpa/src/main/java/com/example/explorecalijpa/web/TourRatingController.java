@@ -3,6 +3,7 @@ package com.example.explorecalijpa.web;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,9 +47,9 @@ public class TourRatingController {
   @ResponseStatus(HttpStatus.CREATED)
   public RatingDto createTourRating(@PathVariable(value = "tourId") int tourId,
       @RequestBody @Valid RatingDto ratingDto) {
-      TourRating rating = tourRatingService.createNew(tourId, ratingDto.getCustomerId(), 
+    TourRating rating = tourRatingService.createNew(tourId, ratingDto.getCustomerId(),
         ratingDto.getScore(), ratingDto.getComment());
-      return new RatingDto(rating);
+    return new RatingDto(rating);
   }
 
   @GetMapping
@@ -77,8 +78,8 @@ public class TourRatingController {
    */
   @PutMapping
   public RatingDto updateWithPut(@PathVariable(value = "tourId") int tourId, @RequestBody @Valid RatingDto ratingDto) {
-      return new RatingDto(tourRatingService.update(tourId, ratingDto.getCustomerId(),
-                ratingDto.getScore(), ratingDto.getComment()));
+    return new RatingDto(tourRatingService.update(tourId, ratingDto.getCustomerId(),
+        ratingDto.getScore(), ratingDto.getComment()));
   }
 
   /**
@@ -88,8 +89,12 @@ public class TourRatingController {
    * @param ratingDto
    * @return The modified Rating DTO.
    */
-  public RatingDto updateWithPatch(@PathVariable(value = "tourId") int tourId, @RequestBody @Valid RatingDto ratingDto) {
-      return ratingDto;
+  public RatingDto updateWithPatch(@PathVariable(value = "tourId") int tourId,
+      @RequestBody @Valid RatingDto ratingDto) {
+    return new RatingDto(tourRatingService.updateSome(tourId,
+        ratingDto.getCustomerId(),
+        Optional.ofNullable(ratingDto.getScore()),
+        Optional.ofNullable(ratingDto.getComment())));
   }
 
   /**
@@ -100,7 +105,7 @@ public class TourRatingController {
    */
   @DeleteMapping("/{customerId}")
   public void delete(@PathVariable(value = "tourId") int tourId, @PathVariable(value = "customerId") int customerId) {
-      tourRatingService.delete(tourId, customerId);
+    tourRatingService.delete(tourId, customerId);
   }
 
   @ExceptionHandler(NoSuchElementException.class)
